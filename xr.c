@@ -17,9 +17,18 @@ char buf[1];
 int len;
 int count;
 int blocks;
+char *filename;
 
-	fd = open(argv[1], O_RDWR);
-	down = open(argv[2], O_CREAT|O_WRONLY|O_TRUNC, 0644);
+	if (argc == 2) {
+		fd = STDIN_FILENO;
+		filename = argv[1];
+	} else if (argc == 3) {
+		fd = open(argv[1], O_RDWR);
+		filename = argv[2];
+	} else {
+		return -1;
+	}
+	down = open(filename, O_CREAT|O_WRONLY|O_TRUNC, 0644);
 	buf[0] = NAK;
 	write(fd, buf, 1);
 	blocks = 0;
@@ -30,7 +39,8 @@ int blocks;
 			if (count == 0 && buf[0] == EOT) {
 				buf[0] = ACK;
 				write(fd, buf, 1);
-				printf("\nfile size %d\n", blocks * 128);
+				if (fd != STDIN_FILENO)
+					printf("\nfile size %d\n", blocks * 128);
 				close(fd);
 				close(down);
 				return(0);
@@ -42,8 +52,10 @@ int blocks;
 			if(count == 128 + 4)
 				break;
 		}
-		printf(".");
-		fflush(stdout);
+		if (fd != STDIN_FILENO) {
+			printf(".");
+			fflush(stdout);
+		}
 		buf[0] = ACK;
 		write(fd, buf, 1);
 		count = 0;

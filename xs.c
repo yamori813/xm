@@ -40,10 +40,20 @@ struct	kevent event;	 /* Event we want to monitor */
 struct	kevent tevent;	 /* Event triggered */
 struct stat statBuf;
 int filelen;
+char *filename;
 
-	fd = open(argv[1], O_RDWR);
-	up = open(argv[2], O_RDONLY);
-	stat(argv[2], &statBuf);
+	if (argc == 2) {
+		fd = STDIN_FILENO;
+		filename = argv[1];
+	} else if (argc == 3) {
+		fd = open(argv[1], O_RDWR);
+		filename = argv[2];
+	} else {
+		return -1;
+	}
+
+	up = open(filename, O_RDONLY);
+	stat(filename, &statBuf);
 	filelen = statBuf.st_size;
 
 	kq = kqueue();
