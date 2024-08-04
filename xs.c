@@ -87,8 +87,8 @@ char *filename;
 				write(fd, buf, 1);
 				++blocks;
 				filelen -= len;
-				printf(".");
-				fflush(stdout);
+				fprintf(stderr, ".");
+				fflush(stderr);
 			}
 			if (buf[0] == ACK && filelen == 0) {
 				buf[0] = EOT;
@@ -96,7 +96,7 @@ char *filename;
 				filelen = -1;
 			}
 			if (buf[0] == ACK && filelen == -1) {
-				printf("\n");
+				fprintf(stderr, "\n");
 				break;
 			}
 		}
