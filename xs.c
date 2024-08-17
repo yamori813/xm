@@ -41,6 +41,7 @@ struct	kevent tevent;	 /* Event triggered */
 struct stat statBuf;
 int filelen;
 char *filename;
+int i;
 
 	if (argc == 2) {
 		fd = STDIN_FILENO;
@@ -78,13 +79,22 @@ char *filename;
 				buf[0] = SOH;
 				buf[1] = blocks;
 				buf[2] = ~blocks & 0xff;
-				write(fd, buf, 3);
+				write(fd, buf, 1);
+				usleep(1000);
+				write(fd, buf+1, 1);
+				usleep(1000);
+				write(fd, buf+2, 1);
+				usleep(1000);
 				len = read(up, buf, 128);
 				if (len != 128)
 					memset(buf + len, CTRLZ, 128 - len);
-				write(fd, buf, 128);
+				for (i = 0; i < 128; ++i) {
+					write(fd, buf+i, 1);
+					usleep(1000);
+				}
 				buf[0] = mksum(buf);
 				write(fd, buf, 1);
+				usleep(1000);
 				++blocks;
 				filelen -= len;
 				fprintf(stderr, ".");
