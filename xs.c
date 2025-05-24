@@ -99,13 +99,11 @@ int i;
 				filelen -= len;
 				fprintf(stderr, ".");
 				fflush(stderr);
-			}
-			if (buf[0] == ACK && filelen == 0) {
+			} else if (buf[0] == ACK && filelen == 0) {
 				buf[0] = EOT;
 				write(fd, buf, 1);
 				filelen = -1;
-			}
-			if (buf[0] == ACK && filelen == -1) {
+			} else {
 				fprintf(stderr, "\n");
 				break;
 			}
